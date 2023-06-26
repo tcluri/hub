@@ -6,6 +6,15 @@
     {% csrf_token %}
     <h3>User details</h3>
     {{ user_form.as_p }}
+    <div id="guardian-consent-form">
+        <h5>This is the guardian consent form</h5>
+        {{guardian_consent_form.as_p}}
+        {{guardian_participation_risk_form.as_p}}
+    </div>
+    <div id="player-consent-form">
+        <h5> This is the player consent form</h5>
+        {{player_consent_form.as_p}}
+    </div>
     <h3>Player details</h3>
     {{ player_form.as_p }}
     <h3>Guardian details</h3>
@@ -19,5 +28,35 @@
     <label for="consent">Consent:</label>
     <input type="checkbox" id="consent" name="consent">
     <input type="submit" value="Submit">
+
+    <!-- start of script to check for guardian or player -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {
+      // Hide the initial consent elements on page load
+      $("#guardian-consent-form").hide();
+      $("#player-consent-form").hide();
+
+      // Bind event listeners to the BooleanFields
+      $("input[name='is_guardian']").change(function() {
+        if ($(this).is(":checked")) {
+          // Show Option 1 consent
+          $("#guardian-consent-form").show();
+          // Hide Option 2 consent
+          $("#player-consent-form").hide();
+        }
+      });
+
+      $("input[name='is_player']").change(function() {
+        if ($(this).is(":checked")) {
+          // Show Option 2 consent
+          $("#player-consent-form").show();
+          // Hide Option 1 consent
+          $("#guardian-consent-form").hide();
+        }
+      });
+    });
+    </script>
+
   </form>
 {% endblock %}

@@ -8,6 +8,15 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ['is_player', 'is_guardian', 'email', 'phone']
 
+class GuardianPermissionForm(forms.Form):
+    guardian_grand_permission = forms.BooleanField(initial=False)
+
+
+class GuardianParticipationRisk(forms.Form):
+    guardian_participation_of_minor_risk = forms.BooleanField(initial=False)
+
+class PlayerConsentForm(forms.Form):
+    player_consent = forms.BooleanField(initial=False)
 
 class PlayerForm(forms.ModelForm):
     date_of_birth = forms.DateField(widget=forms.DateInput(attrs={'type' : 'date'}))
