@@ -9,7 +9,7 @@ from ninja.security import django_auth
 from requests.exceptions import RequestException
 
 from server.firebase_middleware import firebase_to_django_user
-from server.models import Membership, Player, RazorpayTransaction
+from server.models import Membership, Player, RazorpayTransaction, Vaccination
 from server.schema import (
     Credentials,
     FirebaseCredentials,
@@ -19,6 +19,8 @@ from server.schema import (
     PlayerFormSchema,
     PlayerSchema,
     RegistrationSchema,
+    VaccinationFormSchema,
+    VaccinationSchema,
     Response,
     UserFormSchema,
     UserSchema,
@@ -74,12 +76,12 @@ def firebase_login(request, credentials: FirebaseCredentials):
 @api.post("/registration", response={200: PlayerSchema, 400: Response})
 def register_player(request, registration: RegistrationSchema):
     user = request.user
-
+    data = registration.dict()
     try:
         Player.objects.get(user=user)
         return 400, {"message": "Player already exists"}
     except Player.DoesNotExist:
-        player_data = PlayerFormSchema(**registration.dict()).dict()
+        player_data = PlayerFormSchema(**data).dict()
         player = Player(**player_data, user=user)
         player.save()
 
@@ -89,6 +91,33 @@ def register_player(request, registration: RegistrationSchema):
         user.save()
 
         return 200, PlayerSchema.from_orm(player)
+
+
+@api.post("/vaccination", response={200: VaccinationSchema, 400: Response})
+def vaccination_player(request, vaccination: VaccinationFormSchema):
+    user = request.user
+
+    try:
+        player = Player.objects.get(user=user)
+        if player.is_vaccinated:
+            return 400, {"message": "Player is already vaccinated"}
+
+        vaccination_data = VaccinationFormSchema(**vaccination.dict()).dict()
+        vaccination_data["player"] = player
+
+        if "vaccination_certificate" in request.FILES:
+            vaccination_data["vaccination_certificate"] = request.FILES["vaccination_certificate"]
+
+        vaccination_instance = Vaccination(**vaccination_data)
+        vaccination_instance.save()
+
+        player.is_vaccinated = True
+        player.save()
+
+        return 200, VaccinationSchema.from_orm(vaccination_instance)
+    except Player.DoesNotExist:
+        return 400, {"message": "Player does not exist"}
+
 
 
 # Payments

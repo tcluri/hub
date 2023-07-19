@@ -5,7 +5,7 @@ from typing import List
 from django.contrib.auth import get_user_model
 from ninja import ModelSchema, Schema
 
-from server.models import Membership, Player
+from server.models import Membership, Player, Vaccination
 
 User = get_user_model()
 
@@ -111,6 +111,11 @@ class UserSchema(ModelSchema):
         ]
 
 
+class VaccinationSchema(ModelSchema):
+    class Config:
+        model = Vaccination
+        model_fields = "__all__"
+
 class UserFormSchema(ModelSchema):
     class Config:
         model = User
@@ -123,6 +128,10 @@ class PlayerFormSchema(ModelSchema):
         model_exclude = ["user"]
         model_fields_optional = "__all__"
 
+class VaccinationFormSchema(ModelSchema):
+    class Config:
+        model = Vaccination
+        model_exclude = ["player"]
 
 class RegistrationSchema(UserFormSchema, PlayerFormSchema):
     pass

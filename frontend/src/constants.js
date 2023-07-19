@@ -57,6 +57,13 @@ export const occupationChoices = [
   {value: "Unemployed", label: "Unemployed"}
 ];
 
+export const vaccinationChoices = [
+  {value: "CVSHLD" , label: "Covishield"},
+  {value: "CVXN" , label: "Covaxin"},
+  {value: "MDRN" , label: "Moderna"},
+  {value: "SPTNK" , label: "Sputnik V"},
+  {value: "JNJ" , label: "Johnson & Johnson"},
+];
 
 // NOTE: Memberships go from 1st June to 31st May
 export const membershipStartDate = [1, 6];
